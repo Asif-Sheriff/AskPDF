@@ -37,11 +37,11 @@ class JWTAccount(pydantic.BaseModel):
     sub: str  # subject
 
 
-class ChatCreate(BaseModel):
+class ProjectCreate(BaseModel):
     title: str
     description: Optional[str] = None
 
-class ChatResponse(ChatCreate):
+class ProjectResponse(ProjectCreate):
     id: int
     owner_id: int
     created_at: datetime

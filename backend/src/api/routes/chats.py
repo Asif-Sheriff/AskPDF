@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...database.crud.chat import create_chat_with_pdf
+from ...database.crud.project import create_chat_with_pdf
 from ..dependencies.session import get_database_session
 
 router = APIRouter()

@@ -26,7 +26,7 @@ class JWTGenerator:
         # Fixed timedelta usage and added default expiration
         expire = datetime.now(timezone.utc) + (
             expires_delta 
-            or timedelta(minutes=int(os.getenv("JWT_ACCESS_TOKEN_EXPIRATION_TIME", 30)))
+            or timedelta(minutes=int(os.getenv("JWT_ACCESS_TOKEN_EXPIRATION_TIME", 10080)))
         )
         to_encode.update({
             "exp": expire,
@@ -67,13 +67,16 @@ class JWTGenerator:
                 key=os.getenv("JWT_SECRET_KEY"),
                 algorithms=[os.getenv("JWT_ALGORITHM", "HS256")]
             )
+            # Return the exact structure your endpoint expects
             return {
                 "username": payload.get("username"),
-                "user_id": payload.get("user_id")
+                "user_id": int(payload.get("user_id"))  # Ensure this is int
             }
         except JWTError as e:
+            print(f"JWT Error details: {str(e)}")  # More detailed error
             raise ValueError("Invalid token") from e
         except Exception as e:
+            print(f"Unexpected error: {str(e)}")
             raise ValueError(f"Token processing failed: {str(e)}") from e
 
 # Singleton instance
@@ -84,8 +87,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")  # Your login endpoint
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
     """Dependency to validate and get user from JWT token"""
     try:
-        return jwt_generator.retrieve_details_from_token(token)
+        print(f"Received token: {token}")  # Debug print
+        user_data = jwt_generator.retrieve_details_from_token(token)
+        print(f"Decoded user data: {user_data}")  # Debug print
+        return user_data
     except ValueError as e:
+        print(f"Token validation failed: {str(e)}")  # Debug print
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),

@@ -1,7 +1,7 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.projects import Project
-from ..schemas import ChatCreate  # Make sure this schema matches what you need
+from ..schemas import ProjectCreate  # Make sure this schema matches what you need
 import boto3
 from botocore.exceptions import ClientError
 import os
@@ -11,8 +11,8 @@ from datetime import datetime
 async def create_project(
     db: AsyncSession,
     owner_id: int,
-    project_data: ChatCreate,
-    pdf_file: bytes,  # Raw PDF bytes (from FastAPI's UploadFile)
+    project_data: ProjectCreate,
+    pdf_file: UploadFile,  # Raw PDF bytes (from FastAPI's UploadFile)
     filename: str     # Original filename
 ):
     try:
@@ -29,7 +29,7 @@ async def create_project(
         s3_key = f"user_{owner_id}/project_{timestamp}_{filename}"
 
         s3.upload_fileobj(
-            pdf_file,
+            pdf_file.file,
             os.getenv("AWS_S3_BUCKET"),
             s3_key
         )
@@ -40,13 +40,13 @@ async def create_project(
             project = Project(
                 user_id=owner_id,  # Changed from owner_id to user_id to match model
                 title=project_data.title,
-                description=project_data.description,  # Make sure ChatCreate has this field
+                description=project_data.description,  # Make sure ProjectCreate has this field
                 pdf_url=s3_url,  # Store the public URL
                 pdf_s3_key=s3_key,
                 pdf_original_name=filename
             )
             db.add(project)
-            await db.commit()
+            await db.flush()
             await db.refresh(project)
         
         return project

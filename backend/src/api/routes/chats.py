@@ -1,29 +1,49 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...database.crud.project import create_chat_with_pdf
+from ...database.crud.project import create_project
 from ..dependencies.session import get_database_session
+from src.security.jwt import get_current_user
+from typing import Annotated
+from src.database.schemas import ProjectCreate  # Import your schema
 
 router = APIRouter()
 
-@router.post("/createchat")
-async def create_chat(
-    title: str = Form(...),
-    description: str = Form(...),
-    pdf_file: UploadFile = File(...),
-    owner_id: int = Depends(get_current_user),  # Your auth dependency
+@router.post("/createProject", status_code=status.HTTP_201_CREATED)
+async def create_project_endpoint(
+    title: Annotated[str, Form()],
+    description: Annotated[str, Form()],
+    pdf_file: Annotated[UploadFile, File()],
+    current_user: dict = Depends(get_current_user),  # Changed from owner_id to current_user
     db: AsyncSession = Depends(get_database_session)
 ):
     # Validate file type
-    if not pdf_file.filename.endswith(".pdf"):
-        raise HTTPException(400, "Only PDF files are allowed")
+    if not pdf_file.filename.lower().endswith(".pdf"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only PDF files are allowed"
+        )
 
-    # Read file content (stream to avoid memory issues for large files)
+    # Read file content
     pdf_content = await pdf_file.read()
+    
+    # Validate file size (e.g., 10MB max)
+    if len(pdf_content) > 10 * 1024 * 1024:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="File too large (max 10MB)"
+        )
 
-    return await create_chat_with_pdf(
+    await pdf_file.seek(0)
+    # Create project data structure
+    project_data = ProjectCreate(
+        title=title,
+        description=description
+    )
+
+    return await create_project(
         db=db,
-        owner_id=owner_id,
-        chat_data={"title": title, "description": description},
-        pdf_file=pdf_content,
+        owner_id=current_user["user_id"],  # Extract user_id from decoded token
+        project_data=project_data,  # Use proper schema
+        pdf_file=pdf_file,
         filename=pdf_file.filename
     )

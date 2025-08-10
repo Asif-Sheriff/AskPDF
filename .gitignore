@@ -3,3 +3,5 @@ alembic.ini
 alembic
 __pycache__
 venv
+chroma_db
+node_modules

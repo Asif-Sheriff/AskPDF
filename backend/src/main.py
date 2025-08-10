@@ -8,6 +8,8 @@ def initialize_backend_application() -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
+            "http://127.0.0.1:5173",  # Add your frontend origin
+            "http://localhost:5173",   # Common alternative
             "http://127.0.0.1:5500",  # Add your frontend origin
             "http://localhost:5500",   # Common alternative
             "http://localhost:8000",  # If you access backend directly

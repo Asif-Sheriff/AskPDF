@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
+import ChatInterface from './components/ChatInterface';
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
                 path="/dashboard/chat/:projectId"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <ChatInterface project={{id:"1",title: "abc", created_at: "AAA", pdf_url:"Asd",updated_at: "dfad"}}/>
                   </ProtectedRoute>
                 }
                 />

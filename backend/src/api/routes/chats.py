@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from ...database.crud.project import create_project, get_user_projects
+from ...database.crud.chats import create_system_chat 
 from ..dependencies.session import get_database_session
 from src.security.jwt import get_current_user
 from typing import Annotated
@@ -92,6 +93,14 @@ async def create_project_endpoint(
         # Generate summary
         summary = await summarizer.summarize(pdf_text)
         
+        # Store the summary as a system message using CRUD function
+        if summary:
+            await create_system_chat(
+                db=db,
+                project_id=project.id,
+                message=f"Project summary: {summary}"
+            )
+        
         # Chunk text and store in vector DB
         chunks = text_chunker.chunk_text(pdf_text)
         await vector_store.add_texts(
@@ -109,5 +118,5 @@ async def create_project_endpoint(
         "created_at": project.created_at,
         "owner_id": project.user_id,
         "pdf_url": project.pdf_url,
-        "summary": summary  # Now summary is always defined
+        "summary": summary
     }

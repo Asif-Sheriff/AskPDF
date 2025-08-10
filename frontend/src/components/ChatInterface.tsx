@@ -75,7 +75,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ project }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${project.name}-chat-export.txt`;
+    a.download = `${project.title}-chat-export.txt`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -87,10 +87,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ project }) => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {project.name}
+              {project.title}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Created {new Date(project.createdAt).toLocaleDateString()}
+              Created {new Date(project.created_at).toLocaleDateString()}
             </p>
           </div>
           <button

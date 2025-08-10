@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,17 +29,17 @@ function App() {
               <Route
                 path="/dashboard"
                 element={
-                  // <ProtectedRoute>
+                  <ProtectedRoute>
                     <Dashboard />
-                  // </ProtectedRoute>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/dashboard/chat/:projectId"
                 element={
-                  // <ProtectedRoute>
+                  <ProtectedRoute>
                     <Dashboard />
-                  // </ProtectedRoute>
+                  </ProtectedRoute>
                 }
                 />
               

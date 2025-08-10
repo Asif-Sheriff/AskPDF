@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...database.crud.project import create_project
+from ...database.crud.project import create_project, get_user_projects
 from ..dependencies.session import get_database_session
 from src.security.jwt import get_current_user
 from typing import Annotated
@@ -11,6 +11,40 @@ from src.services.vector_store import VectorStore
 from src.services.llm import LLMSummarizer
 
 router = APIRouter()
+
+@router.get("/projects", status_code=status.HTTP_200_OK)
+async def fetch_user_projects(
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_database_session)
+):
+    """
+    Fetch all projects belonging to the current authenticated user.
+    Returns a list of projects with basic information.
+    """
+    try:
+        # Assuming you have a function in your CRUD to get user's projects
+        projects = await get_user_projects(db, current_user["user_id"])
+        
+        if not projects:
+            return []
+        
+        return [
+            {
+                "id": project.id,
+                "title": project.title,
+                "description": project.description,
+                "pdf_url": project.pdf_url,
+                "created_at": project.created_at.isoformat() if project.created_at else None,
+                "updated_at": project.updated_at.isoformat() if project.updated_at else None
+            }
+            for project in projects
+        ]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching projects: {str(e)}"
+        )
+
 
 @router.post("/createProject", status_code=status.HTTP_201_CREATED)
 async def create_project_endpoint(

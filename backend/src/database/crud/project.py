@@ -6,7 +6,17 @@ import boto3
 from botocore.exceptions import ClientError
 import os
 from datetime import datetime
+from sqlalchemy import select
 
+
+async def get_user_projects(db: AsyncSession, user_id: int):
+    """Get all projects for a specific user"""
+    result = await db.execute(
+        select(Project)
+        .where(Project.user_id == user_id)
+        .order_by(Project.created_at.desc())
+    )
+    return result.scalars().all()
 
 async def create_project(
     db: AsyncSession,

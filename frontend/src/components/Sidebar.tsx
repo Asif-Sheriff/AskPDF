@@ -11,7 +11,7 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
 
   const filteredProjects = projects.filter(project =>
-    project.name.toLowerCase().includes(searchTerm.toLowerCase())
+    project.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleLogout = () => {
@@ -111,10 +111,10 @@ const Sidebar: React.FC = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    {project.name}
+                    {project.title}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {new Date(project.createdAt).toLocaleDateString()}
+                    {new Date(project.created_at).toLocaleDateString()}
                   </p>
                 </div>
                 <button

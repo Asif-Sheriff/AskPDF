@@ -7,10 +7,10 @@ export interface User {
 
 export interface Project {
   id: string;
-  name: string;
-  createdAt: string;
-  thumbnail?: string;
-  userId: string;
+  title: string;
+  created_at: string;
+  pdf_url: string;
+  updated_at: string;
 }
 
 export interface Message {

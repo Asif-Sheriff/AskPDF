@@ -77,7 +77,7 @@ export const projectAPI = {
     return response.data
   },
 
-  deleteProject: (projectId: string) => api.delete(`/projects/${projectId}`),
+  deleteProject: (projectId: string) => api.delete(`/project/${projectId}`),
 };
 
 

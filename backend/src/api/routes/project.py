@@ -1,15 +1,18 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Form, status
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Form, status, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...database.crud.project import create_project, get_user_projects
+from ...database.crud.project import create_project, get_user_projects, delete_project
 from ...database.crud.chats import create_system_chat 
 from ..dependencies.session import get_database_session
 from src.security.jwt import get_current_user
+from ..dependencies.verify_owner import verify_project_owner
 from typing import Annotated
 from src.database.schemas import ProjectCreate  # Import your schema
 from src.services.pdf_parser import PDFParser
 from src.services.text_chunker import TextChunker
 from src.services.vector_store import VectorStore
 from src.services.llm import LLMSummarizer
+
+
 
 router = APIRouter()
 
@@ -23,7 +26,7 @@ async def fetch_user_projects(
     Returns a list of projects with basic information.
     """
     try:
-        # Assuming you have a function in your CRUD to get user's projects
+
         projects = await get_user_projects(db, current_user["user_id"])
         
         if not projects:
@@ -120,3 +123,24 @@ async def create_project_endpoint(
         "pdf_url": project.pdf_url,
         "summary": summary
     }
+
+
+@router.delete("/project/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_project_endpoint(
+    project_id: int,
+    current_user: dict = Depends(get_current_user),
+    user: dict = Depends(verify_project_owner),
+    db: AsyncSession = Depends(get_database_session),
+):
+    try:
+        await delete_project(db, project_id, current_user["user_id"])
+        
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete project: {str(e)}"
+        )

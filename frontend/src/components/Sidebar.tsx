@@ -25,9 +25,19 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose, isMobile }) => {
   };
 
   const handleDeleteProject = async (e: React.MouseEvent, projectId: string) => {
-    e.stopPropagation();
+    e.preventDefault(); // Add this to prevent default link behavior
+    e.stopPropagation(); // This stops the event from bubbling up
+    
     if (window.confirm('Are you sure you want to delete this project?')) {
-      await deleteProject(projectId);
+      try {
+        await deleteProject(projectId);
+        // If this was the current project, clear the current project
+        if (currentProject?.id === projectId) {
+          setCurrentProject(null);
+        }
+      } catch (error) {
+        console.error('Failed to delete project:', error);
+      }
     }
   };
 
@@ -142,7 +152,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose, isMobile }) => {
                     </p>
                   </div>
                   <button
-                    onClick={(e) => handleDeleteProject(e, project.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDeleteProject(e, project.id);
+                      }}
                     className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-600 transition-all"
                     title="Delete project"
                   >

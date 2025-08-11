@@ -7,6 +7,10 @@ from botocore.exceptions import ClientError
 import os
 from datetime import datetime
 from sqlalchemy import select
+from sqlalchemy import delete
+from src.database.models.chats import Chat  # Import your Chat model
+from src.services.vector_store import VectorStore
+
 
 
 async def get_user_projects(db: AsyncSession, user_id: int):
@@ -80,4 +84,83 @@ async def create_project(
         raise HTTPException(
             status_code=500,
             detail=f"Database error: {str(e)}"
+        )
+    
+async def delete_file(s3_key: str):
+    """Delete a file from S3"""
+    try:
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            region_name=os.getenv("AWS_REGION")
+        )
+        
+        s3.delete_object(
+            Bucket=os.getenv("AWS_S3_BUCKET"),
+            Key=s3_key
+        )
+        return True
+    except ClientError as e:
+        error_code = e.response.get('Error', {}).get('Code', 'Unknown')
+        if error_code == 'NoSuchKey':
+            # File doesn't exist, which we can consider as successfully deleted
+            return True
+        raise HTTPException(
+            status_code=500,
+            detail=f"S3 deletion failed: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"S3 operation failed: {str(e)}"
+        )
+
+async def delete_project(
+    db: AsyncSession,
+    project_id: int,
+    user_id: int
+):
+    """Delete a project including its S3 file, chats, and database record"""
+    try:
+        # Get the project
+        project = await get_project(db, project_id)
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        if project.user_id != user_id:
+            raise HTTPException(status_code=403, detail="Not authorized")
+
+        # Delete from S3 if it exists
+        if project.pdf_s3_key:
+            try:
+                await delete_file(project.pdf_s3_key)
+            except Exception as s3_error:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Failed to delete S3 file: {str(s3_error)}"
+                )
+
+        # First delete all chats associated with the project
+        await db.execute(
+            delete(Chat)
+            .where(Chat.project_id == project_id)
+        )
+        
+        # Then delete the project
+        await db.execute(
+            delete(Project)
+            .where(Project.id == project_id)
+        )
+        await db.commit()
+        
+        return True
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Project deletion failed: {str(e)}"
         )

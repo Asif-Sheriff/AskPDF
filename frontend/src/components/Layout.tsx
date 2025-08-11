@@ -1,32 +1,32 @@
-import React, { useState } from 'react';
-import { Sun, Moon } from 'lucide-react';
+import React from 'react';
+// import { Sun, Moon } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [isDark, setIsDark] = useState(false);
+  // const [isDark, setIsDark] = useState(false);
 
   React.useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const useDark = savedTheme ? savedTheme === 'dark' : prefersDark;
     
-    setIsDark(useDark);
+    // setIsDark(useDark);
     document.documentElement.classList.toggle('dark', useDark);
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', newTheme);
-  };
+  // const toggleTheme = () => {
+  //   const newTheme = !isDark;
+  //   setIsDark(newTheme);
+  //   localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+  //   document.documentElement.classList.toggle('dark', newTheme);
+  // };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <button
+      {/* <button
         onClick={toggleTheme}
         className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all"
         aria-label="Toggle theme"
@@ -36,7 +36,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         ) : (
           <Moon className="w-5 h-5 text-gray-600" />
         )}
-      </button>
+      </button> */}
       {children}
     </div>
   );

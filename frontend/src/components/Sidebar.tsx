@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose, isMobile }) => {
   };
 
   return (
-    <div className={`${isMobile ? 'fixed inset-0 z-50' : ''} w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full`}>
+    <div className={`${isMobile ? 'fixed inset-0 z-50 w-full' : ''} w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full`}>
       {/* Close button for mobile */}
       {isMobile && (
         <button

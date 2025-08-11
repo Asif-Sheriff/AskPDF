@@ -15,6 +15,20 @@ const Dashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Prevent scrolling when sidebar is open on mobile
+    if (isSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    // Cleanup function to reset overflow when component unmounts
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isSidebarOpen]);
+
+  useEffect(() => {
     if (projectId && projects.length > 0) {
       const project = projects.find(p => p.id === projectId);
       if (project) {
@@ -26,7 +40,7 @@ const Dashboard: React.FC = () => {
   }, [projectId, projects, setCurrentProject]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex overflow-hidden">
+    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 flex overflow-hidden ${isSidebarOpen ? 'fixed' : ''}`}>
       {/* Desktop Sidebar (always visible) */}
       <div className="hidden md:block h-screen sticky top-0 overflow-y-auto">
         <Sidebar />

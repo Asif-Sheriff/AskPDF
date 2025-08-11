@@ -98,7 +98,7 @@ async def create_project_endpoint(
             await create_system_chat(
                 db=db,
                 project_id=project.id,
-                message=f"Project summary: {summary}"
+                message=f"{summary}"
             )
         
         # Chunk text and store in vector DB

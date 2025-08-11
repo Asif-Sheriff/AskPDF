@@ -2,6 +2,7 @@ from typing import Optional
 import logging
 import google.generativeai as genai
 import os
+from prompt import get_pdf_analysis_prompt, get_qa_prompt
 
 class LLMSummarizer:
     # Class-level initialization with Gemini API key
@@ -24,16 +25,8 @@ class LLMSummarizer:
             raise
     
     async def answer_with_context(self, query: str, context_docs: str) -> str:
-        """
-        Given a user query and context documents, use Gemini to produce a response.
-        """
         try:
-            prompt = (
-                "You are a helpful assistant. Use the provided context to answer the query. "
-                "If the context does not contain the answer, say so.\n\n"
-                f"Context:\n{context_docs}\n\n"
-                f"Query: {query}"
-            )
+            prompt = get_qa_prompt(context_docs,query)
 
             response = await self.llm.generate_content_async(prompt)
             return response.text.strip()
@@ -44,11 +37,7 @@ class LLMSummarizer:
     async def summarize(self, text: str, max_length: Optional[int] = 500) -> str:
         """Generate summary of text using Gemini."""
         try:
-            prompt = (
-                f"Please summarize the following text in about {max_length} characters. "
-                "Keep the summary concise and preserve key information:\n\n"
-                f"{text}"
-            )
+            prompt =  get_pdf_analysis_prompt(text)
             
             response = await self.llm.generate_content_async(prompt)
             return response.text

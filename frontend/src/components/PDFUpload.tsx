@@ -17,7 +17,7 @@ const PDFUpload: React.FC = () => {
     if (!file) return;
   
     if (file.type !== 'application/pdf') {
-      toast.error('Please upload a PDF file');
+      toast.error('PLEASE UPLOAD A PDF FILE');
       return;
     }
   
@@ -25,7 +25,6 @@ const PDFUpload: React.FC = () => {
     setUploadProgress(0);
   
     try {
-      // Simulate upload progress
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => Math.min(prev + 10, 90));
       }, 200);
@@ -39,17 +38,16 @@ const PDFUpload: React.FC = () => {
         setUploading(false);
         setUploadProgress(0);
         refreshProjects();
-        toast.success('PDF uploaded successfully!');
-        // Navigate to the chat page with the new project ID
+        toast.success('PDF UPLOADED SUCCESSFULLY!');
         navigate(`/dashboard/chat/${project.id}`, {
-          state: { project } // Passing the project object as state
+          state: { project }
         });
       }, 500);
   
     } catch (error: any) {
       setUploading(false);
       setUploadProgress(0);
-      toast.error(error.response?.data?.message || 'Upload failed');
+      toast.error(error.response?.data?.message || 'UPLOAD FAILED');
     }
   }, [refreshProjects, navigate]);
 
@@ -63,64 +61,60 @@ const PDFUpload: React.FC = () => {
   });
 
   return (
-    <div className="flex-1 flex items-center justify-center p-8">
+    <div className="flex-1 flex items-center justify-center p-8 bg-white">
       <div className="max-w-2xl w-full">
-        <div className="text-center mb-8">
-          <FileText className="w-16 h-16 text-red-600 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="text-center mb-8 border-b-4 border-black pb-8">
+          <FileText className="w-16 h-16 text-black mx-auto mb-4" />
+          <h1 className="text-4xl font-bold text-black mb-2 uppercase">
             Upload Your PDF
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Drop your PDF document here to start an intelligent conversation
+          <p className="text-black font-medium">
+            DROP YOUR PDF DOCUMENT HERE TO START AN INTELLIGENT CONVERSATION
           </p>
         </div>
 
         <div
           {...getRootProps()}
-          className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all cursor-pointer ${
-            isDragActive
-              ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-              : uploading
-              ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 cursor-not-allowed'
-              : 'border-gray-300 dark:border-gray-600 hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
-          }`}
+          className={`relative border-4 border-black p-12 text-center cursor-pointer bg-white shadow-[8px_8px_0_0_#000] hover:shadow-[4px_4px_0_0_#000] transition-all ${
+            uploading ? 'cursor-not-allowed' : ''
+          } ${isDragActive ? 'bg-yellow-200' : ''}`}
         >
           <input {...getInputProps()} />
           
           {uploading ? (
-            <div className="space-y-4">
-              <div className="w-16 h-16 mx-auto bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+            <div className="space-y-6">
+              <div className="w-16 h-16 mx-auto border-2 border-black bg-white rounded-full flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-4 border-black"></div>
               </div>
-              <div className="space-y-2">
-                <p className="text-lg font-medium text-gray-900 dark:text-white">
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-black uppercase">
                   Uploading PDF...
                 </p>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="w-full bg-white border-2 border-black h-4">
                   <div 
-                    className="bg-red-600 h-2 rounded-full transition-all duration-300"
+                    className="bg-black h-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   ></div>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {uploadProgress}% complete
+                <p className="text-sm font-bold text-black">
+                  {uploadProgress}% COMPLETE
                 </p>
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="w-16 h-16 mx-auto bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
-                <Upload className="w-8 h-8 text-red-600" />
+            <div className="space-y-6">
+              <div className="w-16 h-16 mx-auto border-2 border-black bg-white rounded-full flex items-center justify-center">
+                <Upload className="w-8 h-8 text-black" />
               </div>
-              <div className="space-y-2">
-                <p className="text-lg font-medium text-gray-900 dark:text-white">
-                  {isDragActive ? 'Drop your PDF here' : 'Drag & drop your PDF'}
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-black uppercase">
+                  {isDragActive ? 'DROP YOUR PDF HERE' : 'DRAG & DROP YOUR PDF'}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  or click to select a file
+                <p className="text-black font-medium">
+                  OR CLICK TO SELECT A FILE
                 </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
-                  Maximum file size: 50MB
+                <p className="text-sm font-bold text-black">
+                  MAXIMUM FILE SIZE: 50MB
                 </p>
               </div>
             </div>
@@ -129,25 +123,25 @@ const PDFUpload: React.FC = () => {
 
         {/* Features */}
         <div className="mt-12 grid md:grid-cols-3 gap-6">
-          <div className="text-center">
+          <div className="text-center border-2 border-black p-4 bg-white shadow-[4px_4px_0_0_#000]">
             <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
-            <h3 className="font-medium text-gray-900 dark:text-white mb-1">Instant Processing</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Your PDF is processed and ready for questions in seconds
+            <h3 className="font-bold  text-black mb-2 uppercase">Instant Processing</h3>
+            <p className="text-black">
+              YOUR PDF IS PROCESSED AND READY FOR QUESTIONS IN SECONDS
             </p>
           </div>
-          <div className="text-center">
-            <FileText className="w-8 h-8 text-blue-500 mx-auto mb-3" />
-            <h3 className="font-medium text-gray-900 dark:text-white mb-1">Smart Analysis</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Advanced AI understands context and structure
+          <div className="text-center border-2 border-black p-4 bg-white shadow-[4px_4px_0_0_#000]">
+            <FileText className="w-8 h-8 text-red-500 mx-auto mb-3" />
+            <h3 className="font-bold text-black mb-2 uppercase">Smart Analysis</h3>
+            <p className="text-black">
+              ADVANCED AI UNDERSTANDS CONTEXT AND STRUCTURE
             </p>
           </div>
-          <div className="text-center">
-            <AlertCircle className="w-8 h-8 text-orange-500 mx-auto mb-3" />
-            <h3 className="font-medium text-gray-900 dark:text-white mb-1">Secure Storage</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Your documents are encrypted and protected
+          <div className="text-center border-2 border-black p-4 bg-white shadow-[4px_4px_0_0_#000]">
+            <AlertCircle className="w-8 h-8 text-blue-500 mx-auto mb-3" />
+            <h3 className="font-bold text-black mb-2 uppercase">Secure Storage</h3>
+            <p className="text-black">
+              YOUR DOCUMENTS ARE ENCRYPTED AND PROTECTED
             </p>
           </div>
         </div>

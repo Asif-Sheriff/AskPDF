@@ -92,78 +92,78 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 sm:px-6 sm:py-4">
+    <div className="flex flex-col h-screen bg-[#f9f4e8]">
+      {/* Header - Mobile Optimized */}
+      <div className="bg-white border-b-4 border-black px-3 py-2 sm:px-4 sm:py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 sm:space-x-4">
             <button
               onClick={handleGoHome}
-              className="p-1 sm:p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="p-1 sm:p-2 rounded-md hover:bg-[#ffd5cd] active:translate-y-0.5 border-2 border-black shadow-[2px_2px_0_0_#000] hover:shadow-[1px_1px_0_0_#000] transition-all"
               title="Go to Dashboard"
             >
-              <Home className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <Home className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
             </button>
-            <div className="truncate">
-              <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate">
+            <div className="truncate max-w-[140px] sm:max-w-none">
+              <h1 className="text-sm sm:text-xl font-bold text-black truncate">
                 {project.title}
               </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                Created {new Date(project.created_at).toLocaleDateString()}
+              <p className="text-xs text-black">
+                {new Date(project.created_at).toLocaleDateString()}
               </p>
             </div>
           </div>
           <button
             onClick={exportChat}
-            className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-1 sm:py-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+            className="flex items-center space-x-1 px-2 py-1 sm:px-4 sm:py-2 bg-[#ffd5cd] border-2 border-black shadow-[2px_2px_0_0_#000] hover:shadow-[1px_1px_0_0_#000] active:translate-y-0.5 transition-all text-xs sm:text-base"
           >
-            <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Export</span>
+            <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline ml-1">Export</span>
           </button>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 sm:px-8 sm:py-6 space-y-3">
+      {/* Messages - Mobile Optimized */}
+      <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-3 bg-[#f9f4e8]">
         {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center max-w-md">
-              <div className="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Send className="w-8 h-8 text-red-600" />
+          <div className="flex items-center justify-center h-full px-2">
+            <div className="text-center w-full max-w-md p-4 sm:p-6 border-2 border-black bg-white shadow-[4px_4px_0_0_#000] mx-2">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#ffd5cd] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 border-2 border-black">
+                <Send className="w-5 h-5 sm:w-8 sm:h-8 text-black" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              <h3 className="text-base sm:text-lg font-bold text-black mb-2">
                 Start a conversation
               </h3>
-              <p className="text-gray-500 dark:text-gray-400">
-                Ask questions about your PDF document. I can help you summarize, analyze, or find specific information.
+              <p className="text-sm sm:text-base text-black">
+                Ask questions about your PDF document.
               </p>
             </div>
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto px-1 sm:px-0">
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex mb-3 ${message.sender_type === 'USER' ? 'justify-end' : 'justify-start'}`}
+                className={`flex mb-3 sm:mb-4 ${message.sender_type === 'USER' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] sm:max-w-[80%] px-4 py-3 rounded-2xl ${
+                  className={`max-w-[90%] sm:max-w-[85%] px-3 py-2 sm:px-4 sm:py-3 rounded-lg border-2 border-black shadow-[2px_2px_0_0_#000] sm:shadow-[3px_3px_0_0_#000] ${
                     message.sender_type === 'USER'
-                      ? 'bg-gray-700 text-white'
-                      : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700'
+                      ? 'bg-[#a8e1ff]'
+                      : 'bg-white'
                   }`}
                 >
-                  <div className="prose prose-sm max-w-none dark:prose-invert">
+                  <div className="prose prose-sm max-w-none text-sm sm:text-base">
                     <ReactMarkdown>{message.message}</ReactMarkdown>
                   </div>
                   {message.sources && message.sources.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Sources:</p>
+                    <div className="mt-1 sm:mt-2 pt-1 sm:pt-2 border-t-2 border-black">
+                      <p className="text-xs font-bold text-black mb-1">Sources:</p>
                       <div className="flex flex-wrap gap-1">
                         {message.sources.map((source, index) => (
                           <span
                             key={index}
-                            className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded"
+                            className="inline-block px-1 py-0.5 sm:px-2 sm:py-1 text-xxs sm:text-xs bg-[#ffd5cd] border border-black rounded"
                           >
                             {source.document}
                           </span>
@@ -171,8 +171,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
                       </div>
                     </div>
                   )}
-                  <p className="text-xs text-gray-400 mt-2">
-                    {new Date(message.created_at).toLocaleTimeString()}
+                  <p className="text-xxs sm:text-xs text-black mt-1 sm:mt-2 font-mono">
+                    {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
               </div>
@@ -181,12 +181,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
         )}
         
         {loading && (
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto px-1 sm:px-0">
             <div className="flex justify-start">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3">
+              <div className="bg-white border-2 border-black shadow-[2px_2px_0_0_#000] sm:shadow-[3px_3px_0_0_#000] rounded-lg px-3 py-2 sm:px-4 sm:py-3">
                 <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
-                  <span className="text-gray-500 dark:text-gray-400">Thinking...</span>
+                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-black"></div>
+                  <span className="text-sm sm:text-base text-black font-bold">Thinking...</span>
                 </div>
               </div>
             </div>
@@ -196,25 +196,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input - Modified for better mobile layout */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
+      {/* Input - Mobile Optimized */}
+      <div className="bg-white border-t-4 border-black p-2 sm:p-4">
         <div className="max-w-4xl mx-auto">
-          <form onSubmit={handleSendMessage} className="flex gap-2">
+          <form onSubmit={handleSendMessage} className="flex gap-2 sm:gap-3">
             <input
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Ask a question..."
               disabled={loading}
-              className="flex-1 min-w-0 px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 disabled:opacity-50 text-sm sm:text-base"
+              className="flex-1 min-w-0 px-3 py-2 sm:px-4 sm:py-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 bg-white text-black placeholder-black font-bold disabled:opacity-50 shadow-[2px_2px_0_0_#000] sm:shadow-[3px_3px_0_0_#000] text-sm sm:text-base"
             />
             <button
               type="submit"
               disabled={loading || !inputMessage.trim()}
-              className="px-3 py-2 sm:px-4 sm:py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center"
+              className="px-3 py-2 sm:px-4 sm:py-3 bg-[#a8e1ff] text-black border-2 border-black rounded-lg hover:bg-[#8cd4ff] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center shadow-[2px_2px_0_0_#000] sm:shadow-[3px_3px_0_0_#000] hover:shadow-[1px_1px_0_0_#000] active:translate-y-0.5 font-bold"
             >
-              <Send className="w-4 h-4" />
-              <span className="sr-only sm:not-sr-only sm:ml-2">Send</span>
+              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline ml-1 sm:ml-2">Send</span>
             </button>
           </form>
         </div>

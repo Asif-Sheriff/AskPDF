@@ -60,13 +60,13 @@ const Dashboard: React.FC = () => {
         {/* Mobile Menu Button (only visible on mobile) */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="md:hidden absolute top-4 left-4 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-md z-10"
+          className="md:hidden absolute top-4 left-4 p-2 rounded-lg dark:bg-transparent"
         >
           <Menu className="w-5 h-5" />
         </button>
         
         {/* Centered Main Content */}
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center">
           <MainContent />
         </div>
       </div>

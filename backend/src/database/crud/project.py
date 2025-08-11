@@ -18,6 +18,14 @@ async def get_user_projects(db: AsyncSession, user_id: int):
     )
     return result.scalars().all()
 
+async def get_project(db: AsyncSession, project_id: int):
+    result = await db.execute(
+        select(Project)
+        .where(Project.id == project_id)
+    )
+
+    return result.scalars().first()
+
 async def create_project(
     db: AsyncSession,
     owner_id: int,

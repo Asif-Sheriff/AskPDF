@@ -1,10 +1,11 @@
 import pydantic
 from datetime import datetime
 from typing import Optional
+from enum import Enum
 
 
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class UserCreate(BaseModel):
     username: str
@@ -45,3 +46,17 @@ class ProjectResponse(ProjectCreate):
     id: int
     owner_id: int
     created_at: datetime
+
+class SenderType(str, Enum):
+    USER = "USER"
+    SYSTEM = "SYSTEM"
+
+class ChatResponse(BaseModel):
+    chat_id: int
+    project_id: int
+    sender_type: SenderType
+    message: str
+    created_at: datetime
+
+    # Pydantic V2 config (replaces old Config class)
+    model_config = ConfigDict(from_attributes=True)

@@ -99,6 +99,7 @@ const Sidebar: React.FC = () => {
             filteredProjects.map((project) => (
               <Link
                 key={project.id}
+                state={{project}}
                 to={`/dashboard/chat/${project.id}`}
                 className={`group flex items-center space-x-3 p-3 rounded-lg transition-all hover:bg-gray-50 dark:hover:bg-gray-700 ${
                   currentProject?.id === project.id

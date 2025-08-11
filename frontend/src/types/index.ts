@@ -14,11 +14,26 @@ export interface Project {
 }
 
 export interface Message {
-  id: string;
-  content: string;
-  isUser: boolean;
-  timestamp: string;
-  sources?: string[];
+  chat_id: number;
+  project_id: number;
+  message: string;
+  sender_type: 'USER' | 'SYSTEM';
+  created_at: string;
+  sources?: Match[];
+}
+
+export interface Match {
+  document: string;
+  metadata: {
+    project_id: string;
+  };
+  score: number;
+}
+
+export interface QueryResponse{
+  query: string;
+  llm_response: string;
+  matches: Match[];
 }
 
 export interface AuthContextType {

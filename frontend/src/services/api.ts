@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Message, QueryResponse } from '../types';
 
 const BASE_URL = 'http://localhost:8000';
 
@@ -62,9 +63,9 @@ export const projectAPI = {
 };
 
 export const chatAPI = {
-  getChatHistory: (projectId: string) => api.get(`/chat/${projectId}`),
+  getChatHistory: (projectId: string) => api.get<Message[]>(`/chats/${projectId}`),
   sendMessage: (projectId: string, message: string) =>
-    api.post(`/chat/${projectId}`, { message }),
+    api.post<QueryResponse>(`/query/${projectId}`, { query: message, top_k : 3 }),
 };
 
 export default api;

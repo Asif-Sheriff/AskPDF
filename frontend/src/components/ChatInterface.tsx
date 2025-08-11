@@ -4,12 +4,16 @@ import ReactMarkdown from 'react-markdown';
 import { Project, Message } from '../types';
 import { chatAPI } from '../services/api';
 import { toast } from 'react-toastify';
+import { useLocation } from "react-router-dom";
 
 interface ChatInterfaceProps {
   project: Project;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ project }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = () => {
+  const { state } = useLocation();
+  const project = state?.project;
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,7 +23,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ project }) => {
     const loadChatHistory = async () => {
       try {
         const response = await chatAPI.getChatHistory(project.id);
-        setMessages(response.data.messages || []);
+        
+        setMessages(response.data);
       } catch (error) {
         console.error('Error loading chat history:', error);
       }
@@ -37,10 +42,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ project }) => {
     if (!inputMessage.trim() || loading) return;
 
     const userMessage: Message = {
-      id: Date.now().toString(),
-      content: inputMessage,
-      isUser: true,
-      timestamp: new Date().toISOString(),
+      project_id: project.id,
+      chat_id: project.chat_id,
+      message: inputMessage,
+      sender_type: 'USER',
+      created_at: new Date().toISOString(),
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -50,11 +56,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ project }) => {
     try {
       const response = await chatAPI.sendMessage(project.id, inputMessage);
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: response.data.response,
-        isUser: false,
-        timestamp: new Date().toISOString(),
-        sources: response.data.sources,
+        project_id: project.project_id,
+        chat_id: project.chat_id,
+        message: response.data.llm_response,
+        sender_type: 'SYSTEM',
+        sources: response.data.matches,
+        created_at: Date.now().toString(),
       };
 
       setMessages(prev => [...prev, botMessage]);
@@ -68,7 +75,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ project }) => {
 
   const exportChat = () => {
     const chatText = messages.map(msg => 
-      `${msg.isUser ? 'You' : 'Assistant'}: ${msg.content}\n`
+      `${msg.sender_type === 'USER' ? 'USER' : 'SYSTEM'}: ${msg.message}\n`
     ).join('\n');
     
     const blob = new Blob([chatText], { type: 'text/plain' });
@@ -118,20 +125,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ project }) => {
             </p>
           </div>
         ) : (
-          messages.map((message) => (
+          messages.map((message, index) => (
             <div
-              key={message.id}
-              className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+              key={index}
+              className={`flex ${message.sender_type == 'USER' ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`max-w-3xl px-4 py-3 rounded-2xl ${
-                  message.isUser
-                    ? 'bg-red-600 text-white'
+                  message.sender_type === 'USER'
+                    ? 'bg-gray-700 text-white'
                     : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700'
                 }`}
               >
                 <div className="prose prose-sm max-w-none dark:prose-invert">
-                  <ReactMarkdown>{message.content}</ReactMarkdown>
+                  <ReactMarkdown>{message.message}</ReactMarkdown>
                 </div>
                 {message.sources && message.sources.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
@@ -141,13 +148,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ project }) => {
                         key={index}
                         className="inline-block px-2 py-1 mr-2 mb-1 text-xs bg-gray-100 dark:bg-gray-700 rounded"
                       >
-                        {source}
+                        {source.document}
                       </span>
                     ))}
                   </div>
                 )}
                 <p className="text-xs text-gray-400 mt-2">
-                  {new Date(message.timestamp).toLocaleTimeString()}
+                  {new Date(message.created_at).toLocaleTimeString()}
                 </p>
               </div>
             </div>

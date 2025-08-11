@@ -26,7 +26,7 @@ llm = LLMSummarizer()
 
 @router.post("/query/{projectId}", status_code=status.HTTP_201_CREATED)
 async def query_endpoint(
-    projectId: str,
+    projectId: int,
     payload: QueryRequest,
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_database_session)

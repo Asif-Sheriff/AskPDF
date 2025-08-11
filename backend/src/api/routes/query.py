@@ -1,6 +1,7 @@
 # routes/query.py
 from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from ..dependencies.session import get_database_session
 from src.security.jwt import get_current_user

@@ -2,7 +2,7 @@ from typing import Optional
 import logging
 import google.generativeai as genai
 import os
-from prompt import get_pdf_analysis_prompt, get_qa_prompt
+from .prompt import get_pdf_analysis_prompt, get_qa_prompt
 
 class LLMSummarizer:
     # Class-level initialization with Gemini API key

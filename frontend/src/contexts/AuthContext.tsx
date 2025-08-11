@@ -102,19 +102,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authAPI.signup(username, password);
       const { access_token: newToken } = response.data as AuthResponse;
-      
-      const userData = decodeUserFromToken(newToken);
-      if (!userData) {
-        throw new Error('Failed to decode user information');
-      }
-      
-      setToken(newToken);
-      setUser(userData);
+
       localStorage.setItem('token', newToken);
       
       toast.success('Account created successfully!');
+      toast.success('You can login now');
+      return
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Signup failed');
+      toast.error(error.response?.data || 'Signup failed');
       throw error;
     }
   };

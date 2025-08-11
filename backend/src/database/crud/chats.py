@@ -20,6 +20,24 @@ async def create_system_chat(
     await db.refresh(system_chat)
     return system_chat
 
+async def create_user_chat(
+    db: AsyncSession,
+    project_id: int,
+    message: str
+) -> Chat:
+    """
+    Create a user chat message in the database.
+    """
+    user_chat = Chat(
+        project_id=project_id,
+        sender_type="USER",
+        message=message
+    )
+    db.add(user_chat)
+    await db.commit()
+    await db.refresh(user_chat)
+    return user_chat
+
 
 async def get_project_chats(
     db: AsyncSession,

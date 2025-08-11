@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from ..dependencies.session import get_database_session
 from src.security.jwt import get_current_user
+from src.database.crud.chats import create_system_chat
+from src.database.crud.chats import create_user_chat
 
 from src.services.vector_store import VectorStore
 from src.services.llm import LLMSummarizer
@@ -14,7 +16,7 @@ router = APIRouter()
 # Request body schema
 class QueryRequest(BaseModel):
     query: str
-    top_k: int = 4  # Optional, default to 4 results
+    top_k: int = 4
 
 
 # Initialize services (singleton style)
@@ -31,6 +33,8 @@ async def query_endpoint(
 ):
     try:
         # 1. Perform similarity search
+
+        await create_user_chat(db, projectId, payload.query)
         similar_docs = vector_store.similarity_search(payload.query, k=payload.top_k)
 
         if not similar_docs:
@@ -44,6 +48,8 @@ async def query_endpoint(
             query=payload.query,
             context_docs=concatenated_text
         )
+
+        await create_system_chat(db, projectId, llm_response)
 
         # 4. Return response
         return {

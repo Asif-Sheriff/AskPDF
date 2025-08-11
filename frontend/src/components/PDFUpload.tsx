@@ -4,34 +4,33 @@ import { Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { projectAPI } from '../services/api';
 import { useProjects } from '../contexts/ProjectContext';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const PDFUpload: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const { refreshProjects } = useProjects();
+  const navigate = useNavigate();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
-
+  
     if (file.type !== 'application/pdf') {
       toast.error('Please upload a PDF file');
       return;
     }
-
+  
     setUploading(true);
     setUploadProgress(0);
-
+  
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
       // Simulate upload progress
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => Math.min(prev + 10, 90));
       }, 200);
-
-      await projectAPI.createProject(formData);
+  
+      const project = await projectAPI.createProject(file);
       
       clearInterval(progressInterval);
       setUploadProgress(100);
@@ -41,14 +40,18 @@ const PDFUpload: React.FC = () => {
         setUploadProgress(0);
         refreshProjects();
         toast.success('PDF uploaded successfully!');
+        // Navigate to the chat page with the new project ID
+        navigate(`/dashboard/chat/${project.id}`, {
+          state: { project } // Passing the project object as state
+        });
       }, 500);
-
+  
     } catch (error: any) {
       setUploading(false);
       setUploadProgress(0);
       toast.error(error.response?.data?.message || 'Upload failed');
     }
-  }, [refreshProjects]);
+  }, [refreshProjects, navigate]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

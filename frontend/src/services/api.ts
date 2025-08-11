@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Message, QueryResponse } from '../types';
+import { Message, Project, QueryResponse } from '../types';
 
 const BASE_URL = 'http://localhost:8000';
 
@@ -55,12 +55,32 @@ export const authAPI = {
 
 export const projectAPI = {
   getProjects: () => api.get('/projects'),
-  createProject: (formData: FormData) =>
-    api.post('/createProject', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }),
+
+  createProject: async (pdfFile: File) : Promise<Project> => {
+    const title = pdfFile.name;
+    const description = `${title} document chat`;
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('pdf_file', pdfFile);
+
+    const response = await api.post<Project>('/createProject', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    console.log(response);
+    
+
+    return response.data
+  },
+
   deleteProject: (projectId: string) => api.delete(`/projects/${projectId}`),
 };
+
+
 
 export const chatAPI = {
   getChatHistory: (projectId: string) => api.get<Message[]>(`/chats/${projectId}`),

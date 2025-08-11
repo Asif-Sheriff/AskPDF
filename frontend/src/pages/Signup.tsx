@@ -18,11 +18,11 @@ const Signup: React.FC = () => {
     
     if (!username || !password || !confirmPassword) return;
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      alert('PASSWORDS DO NOT MATCH');
       return;
     }
     if (password.length < 6) {
-      alert('Password must be at least 6 characters');
+      alert('PASSWORD MUST BE AT LEAST 6 CHARACTERS');
       return;
     }
 
@@ -31,31 +31,31 @@ const Signup: React.FC = () => {
       await signup(username, password);
       navigate('/dashboard');
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('SIGNUP ERROR:', error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-lime-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
+        <div className="bg-white border-4 border-black rounded-none shadow-[8px_8px_0_0_#000] p-8">
           {/* Logo */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <FileText className="w-8 h-8 text-red-600" />
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">AskPDF</span>
+              <FileText className="w-8 h-8 text-black" />
+              <span className="text-2xl font-bold text-black">ASKPDF</span>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create Account</h2>
-            <p className="text-gray-600 dark:text-gray-400">Start chatting with your PDFs today</p>
+            <h2 className="text-3xl font-bold text-black mb-2">CREATE ACCOUNT</h2>
+            <p className="text-black font-medium">START CHATTING WITH YOUR PDFS TODAY</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Username
+              <label htmlFor="username" className="block text-sm font-bold text-cyan-600 mb-2">
+                USERNAME
               </label>
               <div className="relative">
                 <input
@@ -64,31 +64,16 @@ const Signup: React.FC = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="w-full px-4 py-3 pl-12 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  placeholder="Choose a username"
+                  className="w-full px-4 py-3 pl-12 border-2 border-black rounded-none focus:outline-none focus:ring-0 focus:border-purple-600 bg-white text-black placeholder-gray-500"
+                  placeholder="CHOOSE A USERNAME"
                 />
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-600 w-5 h-5" />
               </div>
             </div>
 
-            {/* <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                placeholder="Enter your email"
-              />
-            </div> */}
-
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Password
+              <label htmlFor="password" className="block text-sm font-bold text-cyan-600 mb-2">
+                PASSWORD
               </label>
               <div className="relative">
                 <input
@@ -97,22 +82,23 @@ const Signup: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  placeholder="Create a password"
+                  className="w-full px-4 py-3 pr-12 border-2 border-black rounded-none focus:outline-none focus:ring-0 focus:border-purple-600 bg-white text-black placeholder-gray-500"
+                  placeholder="CREATE A PASSWORD"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-600 hover:text-cyan-600"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              <p className="mt-1 text-xs text-black font-medium">MUST BE AT LEAST 6 CHARACTERS</p>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Confirm Password
+              <label htmlFor="confirmPassword" className="block text-sm font-bold text-cyan-600 mb-2">
+                CONFIRM PASSWORD
               </label>
               <input
                 id="confirmPassword"
@@ -120,39 +106,43 @@ const Signup: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                placeholder="Confirm your password"
+                className="w-full px-4 py-3 border-2 border-black rounded-none focus:outline-none focus:ring-0 focus:border-purple-600 bg-white text-black placeholder-gray-500"
+                placeholder="CONFIRM YOUR PASSWORD"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading || !username || !password || !confirmPassword}
-              className="w-full px-4 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+              className="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-none hover:bg-cyan-600 border-2 border-black focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] active:shadow-[0px_0px_0_0_#000] active:translate-x-1 active:translate-y-1"
             >
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>Creating account...</span>
+                  <span>CREATING ACCOUNT...</span>
                 </div>
               ) : (
-                'Create Account'
+                'CREATE ACCOUNT'
               )}
             </button>
           </form>
 
           {/* Footer */}
           <div className="mt-8 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
-              Already have an account?{' '}
+            <p className="text-black font-medium">
+              ALREADY HAVE AN ACCOUNT?{' '}
               <Link
                 to="/login"
-                className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium"
+                className="text-purple-600 hover:text-cyan-600 font-bold underline"
               >
-                Sign in
+                SIGN IN
               </Link>
             </p>
           </div>
+
+          {/* Brutalist decoration elements */}
+          <div className="absolute bottom-2 right-2 w-4 h-4 bg-cyan-600 border-2 border-black"></div>
+          <div className="absolute top-2 left-2 w-3 h-3 bg-purple-600 border-2 border-black"></div>
         </div>
       </div>
     </div>

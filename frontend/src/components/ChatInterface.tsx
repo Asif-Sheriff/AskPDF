@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Download } from 'lucide-react';
+import { Send, Download, Home } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Project, Message } from '../types';
 import { chatAPI } from '../services/api';
 import { toast } from 'react-toastify';
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface ChatInterfaceProps {
   project: Project;
@@ -18,6 +18,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loadChatHistory = async () => {
@@ -87,18 +88,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleGoHome = () => {
+    navigate('/dashboard');
+  };
+
+
   return (
     <div className="flex-1 flex flex-col h-screen">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {project.title}
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Created {new Date(project.created_at).toLocaleDateString()}
-            </p>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={handleGoHome}
+              className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              title="Go to Dashboard"
+            >
+              <Home className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            </button>
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                {project.title}
+              </h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Created {new Date(project.created_at).toLocaleDateString()}
+              </p>
+            </div>
           </div>
           <button
             onClick={exportChat}

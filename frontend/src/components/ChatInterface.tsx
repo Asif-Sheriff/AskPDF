@@ -61,7 +61,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
         message: response.data.llm_response,
         sender_type: 'SYSTEM',
         sources: response.data.matches,
-        created_at: Date.now().toString(),
+        created_at: new Date().toISOString(),
       };
 
       setMessages(prev => [...prev, botMessage]);

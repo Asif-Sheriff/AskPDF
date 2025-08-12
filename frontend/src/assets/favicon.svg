@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="ASK PDF">
+  <rect rx="10" width="64" height="64" fill="#0B5FFF"/>
+  <!-- document body -->
+  <g transform="translate(12,10)">
+    <rect x="0" y="0" width="40" height="44" rx="4" fill="#ffffff"/>
+    <!-- folded corner -->
+    <path d="M32 0 L40 8 L32 8 Z" fill="#E63946"/>
+    <!-- subtle page lines -->
+    <rect x="6" y="10" width="28" height="3" rx="1" fill="#E6EEF9"/>
+    <rect x="6" y="18" width="28" height="3" rx="1" fill="#E6EEF9"/>
+    <rect x="6" y="26" width="20" height="3" rx="1" fill="#E6EEF9"/>
+    <!-- speech tail -->
+    <path d="M6 44 L0 52 L12 44 Z" fill="#ffffff"/>
+    <!-- small "ASK" letter (stylized A) -->
+    <path d="M22 32 L18 39 L26 39 Z M19 35 L25 35" fill="#0B5FFF"/>
+  </g>
+</svg>
+

@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { Message, Project, QueryResponse } from '../types';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+                 process.env.REACT_APP_API_BASE_URL
+
 
 // Create axios instance
 const api = axios.create({

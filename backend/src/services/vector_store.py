@@ -6,11 +6,13 @@ from chromadb.utils import embedding_functions
 class VectorStore:
     def __init__(
         self, 
+        project_id: str,
         collection_name: str = "documents",
         persist_directory: str = "chroma_db",
         embedding_model_name: str = "all-MiniLM-L6-v2"
     ):
-        self.collection_name = collection_name
+        self.project_id = project_id
+        self.base_collection_name = collection_name
         self.persist_directory = persist_directory
         self.embedding_model_name = embedding_model_name
         self.client = self._initialize_client()
@@ -19,11 +21,14 @@ class VectorStore:
     def _initialize_client(self):
         """Initialize connection to ChromaDB"""
         try:
-            # New way to initialize the client
             return chromadb.PersistentClient(path=self.persist_directory)
         except Exception as e:
             logging.error(f"Failed to initialize Chroma client: {str(e)}")
             raise
+        
+    def _get_collection_name(self):
+        """Generate collection name combining project ID and base name"""
+        return f"{self.project_id}_{self.base_collection_name}"
         
     def _get_or_create_collection(self):
         """Get or create a collection with embedding function"""
@@ -32,7 +37,7 @@ class VectorStore:
                 model_name=self.embedding_model_name
             )
             return self.client.get_or_create_collection(
-                name=self.collection_name,
+                name=self._get_collection_name(),
                 embedding_function=embedding_func,
                 metadata={"hnsw:space": "cosine"}
             )
@@ -48,7 +53,6 @@ class VectorStore:
                 metadatas=metadatas,
                 ids=ids if ids else [str(i) for i in range(len(texts))]
             )
-            # No need to explicitly call persist() with the new client
         except Exception as e:
             logging.error(f"Vector storage failed: {str(e)}")
             raise
@@ -75,4 +79,12 @@ class VectorStore:
             ]
         except Exception as e:
             logging.error(f"Similarity search failed: {str(e)}")
+            raise
+
+    def delete_project_collection(self):
+        """Delete the entire collection for this project"""
+        try:
+            self.client.delete_collection(name=self._get_collection_name())
+        except Exception as e:
+            logging.error(f"Failed to delete collection: {str(e)}")
             raise

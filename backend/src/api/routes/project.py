@@ -11,6 +11,7 @@ from src.services.pdf_parser import PDFParser
 from src.services.text_chunker import TextChunker
 from src.services.vector_store import VectorStore
 from src.services.llm import LLMSummarizer
+import logging
 
 
 
@@ -58,72 +59,77 @@ async def create_project_endpoint(
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_database_session)
 ):
-    # Validate PDF file
-    PDFParser.validate_pdf_file(pdf_file)
-    
-    # Read and validate file size
-    pdf_content = await pdf_file.read()
-    if len(pdf_content) > 10 * 1024 * 1024:
-        raise HTTPException(
-            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail="File too large (max 10MB)"
-        )
-    await pdf_file.seek(0)
-
-    # Extract text from PDF
-    pdf_text = await PDFParser.extract_text_from_pdf(pdf_file)
-
-    # Create project in database
-    project_data = ProjectCreate(title=title, description=description)
-    project = await create_project(
-        db=db,
-        owner_id=current_user["user_id"],
-        project_data=project_data,
-        pdf_file=pdf_file,
-        filename=pdf_file.filename
-    )
-
-    # Initialize services
-    text_chunker = TextChunker()
-    vector_store = VectorStore()
-    summarizer = LLMSummarizer()
-
-    # Initialize summary as None
-    summary = None
-    
-    # Process the text
     try:
-        # Generate summary
-        summary = await summarizer.summarize(pdf_text)
+        # Validate PDF file
+        PDFParser.validate_pdf_file(pdf_file)
         
-        # Store the summary as a system message using CRUD function
-        if summary:
-            await create_system_chat(
-                db=db,
-                project_id=project.id,
-                message=f"{summary}"
+        # Read and validate file size
+        pdf_content = await pdf_file.read()
+        if len(pdf_content) > 10 * 1024 * 1024:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="File too large (max 10MB)"
             )
-        
-        # Chunk text and store in vector DB
-        chunks = text_chunker.chunk_text(pdf_text)
-        await vector_store.add_texts(
-            texts=chunks,
-            metadatas=[{"project_id": str(project.id)} for _ in chunks]
+        await pdf_file.seek(0)
+
+        # Extract text from PDF
+        pdf_text = await PDFParser.extract_text_from_pdf(pdf_file)
+
+
+        # Create project in database
+        project_data = ProjectCreate(title=title, description=description)
+        project = await create_project(
+            db=db,
+            owner_id=current_user["user_id"],
+            project_data=project_data,
+            pdf_file=pdf_file,
+            filename=pdf_file.filename
         )
+
+        # Initialize services
+        text_chunker = TextChunker()
+        vector_store = VectorStore(project.id)
+        summarizer = LLMSummarizer()
+
+        await pdf_file.close()
+        # Process the text
+        summary = None
+        try:
+            # Generate summary
+            summary = await summarizer.summarize(pdf_text)
+            
+            if summary:
+                await create_system_chat(
+                    db=db,
+                    project_id=project.id,
+                    message=f"{summary}"
+                )
+            
+            # Chunk text and store in vector DB
+            chunks = text_chunker.chunk_text(pdf_text)
+            await vector_store.add_texts(
+                texts=chunks,
+                metadatas=[{"project_id": str(project.id)} for _ in chunks]
+            )
+        except Exception as e:
+            logging.error(f"Text processing error: {str(e)}")
+            # Consider whether to raise here if processing is critical
+
+        return {
+            "id": project.id,
+            "title": project.title,
+            "description": project.description,
+            "created_at": project.created_at.isoformat(),  # Consistent format
+            "owner_id": project.user_id,
+            "pdf_url": project.pdf_url,
+            "summary": summary
+        }
     except Exception as e:
-        # Log error but don't fail the request
-        print(f"Text processing error: {str(e)}")
-
-    return {
-        "id": project.id,
-        "title": project.title,
-        "description": project.description,
-        "created_at": project.created_at,
-        "owner_id": project.user_id,
-        "pdf_url": project.pdf_url,
-        "summary": summary
-    }
-
+        logging.error(f"Project creation failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create project"
+        )
 
 @router.delete("/project/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_project_endpoint(
@@ -133,14 +139,19 @@ async def delete_project_endpoint(
     db: AsyncSession = Depends(get_database_session),
 ):
     try:
+        # Delete vector store first
+        vector_store = VectorStore(project_id)
+        vector_store.delete_project_collection()
+        
+        # Then delete from database
         await delete_project(db, project_id, current_user["user_id"])
         
         return Response(status_code=status.HTTP_204_NO_CONTENT)
-
     except HTTPException:
         raise
     except Exception as e:
+        logging.error(f"Failed to delete project: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete project: {str(e)}"
+            detail="Failed to delete project"
         )

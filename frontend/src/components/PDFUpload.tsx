@@ -114,7 +114,7 @@ const PDFUpload: React.FC = () => {
                   OR CLICK TO SELECT A FILE
                 </p>
                 <p className="text-sm font-bold text-black">
-                  MAXIMUM FILE SIZE: 50MB
+                  MAXIMUM FILE SIZE: 1MB
                 </p>
               </div>
             </div>
